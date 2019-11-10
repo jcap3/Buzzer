@@ -41,9 +41,7 @@ export default class ChoiceCard extends React.Component {
             <Card border= {this.props.form === 'host'? 'primary': 'danger'}>
                 <Card.Header ><Card.Title>{this.props.title}</Card.Title></Card.Header>
                 <Card.Body>
-                    <Card.Text>
-                        {this.createForm()}
-                    </Card.Text>
+                    {this.createForm()}        
                 </Card.Body>
             </Card>
         )
