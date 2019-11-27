@@ -27,4 +27,4 @@
 /frontend/debug.log
 
 #backend part #######################################
-
+/backend/.idea/*
