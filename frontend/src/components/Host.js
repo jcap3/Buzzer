@@ -11,7 +11,7 @@ import Card from 'react-bootstrap/Card'
 
 let temporaryGuestsData = [
     {'name' : 'joshua'} ,
-    {'name' : 'tae'}, 
+    {'name' : 'tae'},
     {'name' : 'somebody'}
 ];
 
@@ -26,14 +26,14 @@ export default class Host extends React.Component {
     };
 
     componentDidMount() {
-        // this.registerToServer(); 
+        this.registerToServer();
         //this code below is temporary just to remove websocket connection
-        this.connectionSuccessful = !false; //remove inverter
-        this.setState({isLoading: false})
+        this.connectionSuccessful = false; //remove inverter
+        // this.setState({isLoading: false})
     }
 
     registerToServer = () => {
-        let socket = new WebSocket('ws://localhost:8080/create_game');
+        let socket = new WebSocket('ws://10.12.19.71:8081/create-game');
         socket.onopen = (e) => {
             console.log('registered');
             this.connectionSuccessful = true;
@@ -48,8 +48,8 @@ export default class Host extends React.Component {
         };
         socket.onerror = e => {
             console.log('error occurred');
-            this.connectionSuccessful = !false; //remove inverter
-            this.setState({isLoading: false})
+            this.connectionSuccessful = false; //remove inverter
+            // go back to main page
         }
     };
 
@@ -98,7 +98,7 @@ export default class Host extends React.Component {
 
     cardsOfGuests = () => {
         let comps = [];
-        temporaryGuestsData.map(guest => {
+        temporaryGuestsData.forEach(guest => {
             comps.push(this.createGuest(guest.name, 0))
         });
         return (
