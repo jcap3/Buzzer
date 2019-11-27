@@ -11,7 +11,7 @@ import Host from './Host'
 export default class Layout extends React.Component {
     state = {
 
-    }
+    };
     appFrontMessage = () => {
         return (
             <React.Fragment>
@@ -24,7 +24,7 @@ export default class Layout extends React.Component {
                 </p>
             </React.Fragment>
             )
-    }
+    };
     main = () => {
         return(<React.Fragment>        
                 <Container>
@@ -45,15 +45,15 @@ export default class Layout extends React.Component {
                     </Row>
                 </Container>
         </React.Fragment>)
-    }    
+    };
 
     hosting = () => {
         return (<Host test='wew'/>)
-    }
+    };
 
     guesting = () => {
         return (<h1>guesting</h1>)
-    }
+    };
 
     render() {
         return (

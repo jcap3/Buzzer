@@ -13,17 +13,17 @@ let temporaryGuestsData = [
     {'name' : 'joshua'} ,
     {'name' : 'tae'}, 
     {'name' : 'somebody'}
-]
+];
 
 export default class Host extends React.Component {
 
-    connectionSuccessful = false
+    connectionSuccessful = false;
 
     state = { 
         isLoading: true,
         gameCode: 'ABC123',
         numberOfGuests: 0,
-    }
+    };
 
     componentDidMount() {
         // this.registerToServer(); 
@@ -38,20 +38,20 @@ export default class Host extends React.Component {
             console.log('registered');
             this.connectionSuccessful = true;
             this.setState({isLoading: false})
-        }
+        };
         socket.onmessage = (e) => {
             console.log('message received')
-        }
+        };
         socket.onclose = (e) => {
             console.log('connection is closing')
             
-        }
+        };
         socket.onerror = e => {
-            console.log('error occurred')
+            console.log('error occurred');
             this.connectionSuccessful = !false; //remove inverter
             this.setState({isLoading: false})
         }
-    }
+    };
 
     hostJumboTronMessage = () => {
         return (
@@ -66,7 +66,7 @@ export default class Host extends React.Component {
                 </div>
             </React.Fragment>
         )
-    }
+    };
 
     proceedToHostingAfterConnectingToServer = () => { 
         console.log('wew');
@@ -94,17 +94,17 @@ export default class Host extends React.Component {
                     </Row>
                 </Container>
             )
-    }
+    };
 
     cardsOfGuests = () => {
-        let comps = []
+        let comps = [];
         temporaryGuestsData.map(guest => {
             comps.push(this.createGuest(guest.name, 0))
-        })
+        });
         return (
             {comps}
         )
-    }
+    };
 
     render () {
         
@@ -130,4 +130,4 @@ const CreateGuest = ({name, score}) => {
             </Card>
         </React.Fragment>
     )
-}
+};
