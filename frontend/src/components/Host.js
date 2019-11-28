@@ -33,7 +33,7 @@ export default class Host extends React.Component {
     }
 
     registerToServer = () => {
-        let socket = new WebSocket('ws://10.12.19.71:8081/create-game');
+        let socket = new WebSocket('ws://10.12.19.71:8081/buzzerqueue/connect');
         socket.onopen = (e) => {
             console.log('registered');
             this.connectionSuccessful = true;
@@ -68,8 +68,7 @@ export default class Host extends React.Component {
         )
     };
 
-    proceedToHostingAfterConnectingToServer = () => { 
-        console.log('wew');
+    proceedToHostingAfterConnectingToServer = () => {
         if (this.connectionSuccessful) 
             return (
                 <Container>

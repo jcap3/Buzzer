@@ -1,4 +1,4 @@
-package messages.encoders;
+package org.jcap.messages.encoders;
 
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;

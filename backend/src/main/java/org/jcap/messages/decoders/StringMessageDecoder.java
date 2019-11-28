@@ -1,4 +1,4 @@
-package messages.decoders;
+package org.jcap.messages.decoders;
 
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
