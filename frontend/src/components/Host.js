@@ -1,5 +1,4 @@
 import React from 'react'
-import LoadingWholePage from './LoadingWholePage'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -17,41 +16,23 @@ let temporaryGuestsData = [
 
 export default class Host extends React.Component {
 
-    connectionSuccessful = false;
-
-    state = { 
-        isLoading: true,
-        gameCode: 'ABC123',
-        numberOfGuests: 0,
-    };
-
-    componentDidMount() {
-        this.registerToServer();
-        //this code below is temporary just to remove websocket connection
-        this.connectionSuccessful = false; //remove inverter
-        // this.setState({isLoading: false})
+    constructor(props) {
+        super(props);
+        this.state = {
+            gameCode: 'ABC123',
+            numberOfGuests: 0,
+        };
+        this.ws = this.props.websocket;
     }
 
-    registerToServer = () => {
-        let socket = new WebSocket('ws://10.12.19.71:8081/buzzerqueue/connect');
-        socket.onopen = (e) => {
-            console.log('registered');
-            this.connectionSuccessful = true;
-            this.setState({isLoading: false})
-        };
-        socket.onmessage = (e) => {
-            console.log('message received')
-        };
-        socket.onclose = (e) => {
-            console.log('connection is closing')
-            
-        };
-        socket.onerror = e => {
-            console.log('error occurred');
-            this.connectionSuccessful = false; //remove inverter
-            // go back to main page
-        }
-    };
+    componentDidMount() {
+        this.ws.addEventListener("message", e => {
+            let data = JSON.parse(e.data);
+            if (data.messageType === 'new-game-code') {
+                this.setState({gameCode : data.content});
+            }
+        });
+    }
 
     hostJumboTronMessage = () => {
         return (
@@ -60,16 +41,16 @@ export default class Host extends React.Component {
                     Game Code: <Badge variant='info'>{this.state.gameCode}</Badge>
                 </h1>
                 <p>This code will be used by guests who want to join your game.</p>
-                <div>                    
+                <div>
                     <span>Accepting incoming guests</span>
-                    <Spinner animation='grow' /> 
+                    <Spinner animation='grow' />
                 </div>
             </React.Fragment>
         )
     };
 
     proceedToHostingAfterConnectingToServer = () => {
-        if (this.connectionSuccessful) 
+        if (this.connectionSuccessful)
             return (
                 <Container>
                     <Row>
@@ -78,7 +59,7 @@ export default class Host extends React.Component {
                                 {this.hostJumboTronMessage()}
                             </Jumbotron >
                         </Col>
-                    </Row> 
+                    </Row>
                     <Row>
                         <Col>
                             <Card border='primary'>
@@ -88,29 +69,17 @@ export default class Host extends React.Component {
                                 <Card.Body>
                                     {temporaryGuestsData.map ((guest, i) => <CreateGuest name={guest.name} key={i}/>)}
                                 </Card.Body>
-                            </Card> 
+                            </Card>
                         </Col>
                     </Row>
                 </Container>
             )
     };
-
-    cardsOfGuests = () => {
-        let comps = [];
-        temporaryGuestsData.forEach(guest => {
-            comps.push(this.createGuest(guest.name, 0))
-        });
-        return (
-            {comps}
-        )
-    };
-
+              
     render () {
-        
         return (
             <React.Fragment>
-                {this.state.isLoading? <LoadingWholePage message='Connecting to server'/> : 
-                this.proceedToHostingAfterConnectingToServer()}
+                {this.proceedToHostingAfterConnectingToServer()}
             </React.Fragment>
         )
     }

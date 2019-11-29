@@ -7,11 +7,35 @@ import Jumbotron from 'react-bootstrap/Jumbotron'
 import ChoiceCard from './ChoiceCard'
 import {BrowserRouter, Route} from 'react-router-dom'
 import Host from './Host'
+import LoadingWholePage from './LoadingWholePage'
 
 export default class Layout extends React.Component {
-    state = {
 
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true
+        };
+        this.connectionSuccessful = false;
+        this.ws = new WebSocket('ws://10.12.19.71:8081/buzzerqueue/connect');
+    }
+
+    componentDidMount() {
+        this.ws.onopen = (e) => {
+            console.log('Connected to Server');
+            this.setState({isLoading : false});
+        };
+        this.ws.onmessage = (e) => {
+            console.log(e.data);
+        };
+        this.ws.onclose = (e) => {
+            console.log('Disconnected from Server. ' + e.reason);
+        };
+        this.ws.onerror = e => {
+            console.log('Error Occurred');
+        }
+    }
+
     appFrontMessage = () => {
         return (
             <React.Fragment>
@@ -48,24 +72,32 @@ export default class Layout extends React.Component {
     };
 
     hosting = () => {
-        return (<Host test='wew'/>)
+        return (<Host websocket={this.ws}/>)
     };
 
     guesting = () => {
         return (<h1>guesting</h1>)
     };
 
-    render() {
+    layoutContent = () => {
         return (
             <React.Fragment>
                 <div style={{marginBottom: 10 + 'px'}}>
                     <CustomNavBar brand='DCAP Buzzer'/>
-                </div>        
+                </div>
                 <BrowserRouter>
                     <Route exact={true} path='/' component={this.main}/>
                     <Route exact={true} path='/host' component={this.hosting}/>
                     <Route exact={true} path='/guest' component={this.guesting}/>
-                </BrowserRouter> 
+                </BrowserRouter>
+            </React.Fragment>
+        )
+    };
+
+    render() {
+        return (
+            <React.Fragment>
+                {this.state.isLoading? <LoadingWholePage message='Connecting to server'/> : this.layoutContent()}
             </React.Fragment>
         )
     }
