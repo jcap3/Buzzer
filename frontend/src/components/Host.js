@@ -8,19 +8,13 @@ import Spinner from 'react-bootstrap/Spinner'
 import Card from 'react-bootstrap/Card'
 
 
-let temporaryGuestsData = [
-    {'name' : 'joshua'} ,
-    {'name' : 'tae'},
-    {'name' : 'somebody'}
-];
-
 export default class Host extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             gameCode: 'ERROR',
-            numberOfGuests: 0,
+            guests: [{'name':'testdata'}],
         };
         this.ws = this.props.websocket;
     }
@@ -71,10 +65,10 @@ export default class Host extends React.Component {
                         <Col>
                             <Card border='primary'>
                                 <Card.Header>
-                                    Current Guests: {this.state.numberOfGuests}
+                                    Current Guests: {this.state.guests.length}
                                 </Card.Header>
                                 <Card.Body>
-                                    {temporaryGuestsData.map ((guest, i) => <CreateGuest name={guest.name} key={i}/>)}
+                                    {this.state.guests.map ((guest, i) => <CreateGuest name={guest.name} key={i}/>)}
                                 </Card.Body>
                             </Card>
                         </Col>

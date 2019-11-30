@@ -7,6 +7,7 @@ import Jumbotron from 'react-bootstrap/Jumbotron'
 import ChoiceCard from './ChoiceCard'
 import {BrowserRouter, Route} from 'react-router-dom'
 import Host from './Host'
+import Guest from './Guest'
 import LoadingWholePage from './LoadingWholePage'
 
 export default class Layout extends React.Component {
@@ -18,6 +19,8 @@ export default class Layout extends React.Component {
         };
         this.connectionSuccessful = false;
         this.ws = new WebSocket('ws://192.168.0.33:8080/buzzerqueue/connect');
+        this.currentGuestName = '';
+        this.currentGuestGameCode = '';
     }
 
     componentDidMount() {
@@ -49,6 +52,15 @@ export default class Layout extends React.Component {
             </React.Fragment>
             )
     };
+
+    handleChangeForName = e => {
+        this.currentGuestName = e.target.value;
+    }
+
+    handleChangeForGameCode = e => {
+        this.currentGuestGameCode = e.target.value;
+    }
+
     main = () => {
         return(<React.Fragment>        
                 <Container>
@@ -64,19 +76,22 @@ export default class Layout extends React.Component {
                             <ChoiceCard title='Host' form='host'/>
                         </Col>
                         <Col>
-                            <ChoiceCard title='Guest' form='guest'/>
+                            <ChoiceCard title='Guest' form='guest' handleClickForJoinGame={this.handleClickForJoinGame}
+                                handleChangeForName={this.handleChangeForName} 
+                                handleChangeForGameCode={this.handleChangeForGameCode}
+                            />
                         </Col>
                     </Row>
                 </Container>
         </React.Fragment>)
-    };
+    };   
 
     hosting = () => {
         return (<Host websocket={this.ws}/>)
     };
 
     guesting = () => {
-        return (<h1>guesting</h1>)
+        return (<Guest websocket={this.ws} guestName = {this.currentGuestName} guestGameCode = {this.currentGuestGameCode}/>)
     };
 
     layoutContent = () => {
