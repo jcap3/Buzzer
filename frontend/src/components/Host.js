@@ -19,19 +19,25 @@ export default class Host extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            gameCode: 'ABC123',
+            gameCode: 'ERROR',
             numberOfGuests: 0,
         };
         this.ws = this.props.websocket;
     }
 
+    componentDidUpdate() {
+        console.log('host component update');
+    }
+
     componentDidMount() {
+        console.log("host mount")
         this.ws.addEventListener("message", e => {
             let data = JSON.parse(e.data);
-            if (data.messageType === 'new-game-code') {
-                this.setState({gameCode : data.content});
+            if (data.messageType === 'HOSTGAME') {        
+                this.setState({gameCode : data.content});                
             }
         });
+        this.ws.send('HOSTGAME');
     }
 
     hostJumboTronMessage = () => {
@@ -50,7 +56,8 @@ export default class Host extends React.Component {
     };
 
     proceedToHostingAfterConnectingToServer = () => {
-        if (this.connectionSuccessful)
+        if (this.state.gameCode !== 'ERROR') {
+            console.log(this.state.gameCode);
             return (
                 <Container>
                     <Row>
@@ -74,6 +81,7 @@ export default class Host extends React.Component {
                     </Row>
                 </Container>
             )
+        }
     };
               
     render () {

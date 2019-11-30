@@ -1,15 +1,14 @@
+import com.google.gson.JsonObject;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
 
 public class TestClass {
     @Test
     public void wew() {
-        Set<String> myCodes = new HashSet<>();
-//        System.out.println(generateUniqueGameCode(myCodes));
+        JsonObject test = new JsonObject();
+        test.addProperty("data", "ABC123");
+        System.out.println(test.toString());
+
     }
-
-
-
 }

@@ -17,7 +17,7 @@ export default class Layout extends React.Component {
             isLoading: true
         };
         this.connectionSuccessful = false;
-        this.ws = new WebSocket('ws://10.12.19.71:8081/buzzerqueue/connect');
+        this.ws = new WebSocket('ws://192.168.0.33:8080/buzzerqueue/connect');
     }
 
     componentDidMount() {
