@@ -20,7 +20,7 @@ import org.jcap.GameSessionManager;
         encoders = {StringMessageEncoder.class, SimpleMessageEncoder.class})
 public class FrontEndBuzzerQueueEndpoint {
 
-    private static HashMap<Integer, Client> frontEndSession = new HashMap<>(); // improvement, create object to handle clients that will contain the Session and has a client type of either Host or Guest
+    private static HashMap<Integer, Client> frontEndSession = new HashMap<>();
     private GameSessionManager gameSessionManager = GameSessionManager.getInstance();
     private Gson gson = new Gson();
 
