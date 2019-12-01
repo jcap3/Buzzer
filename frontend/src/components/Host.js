@@ -6,7 +6,7 @@ import Jumbotron from 'react-bootstrap/Jumbotron'
 import Badge from 'react-bootstrap/Badge'
 import Spinner from 'react-bootstrap/Spinner'
 import Card from 'react-bootstrap/Card'
-
+import Commons from './Commons'
 
 export default class Host extends React.Component {
 
@@ -14,7 +14,7 @@ export default class Host extends React.Component {
         super(props);
         this.state = {
             gameCode: 'ERROR',
-            guests: [{'name':'testdata'}],
+            guests: [],
         };
         this.ws = this.props.websocket;
     }
@@ -29,9 +29,11 @@ export default class Host extends React.Component {
             let data = JSON.parse(e.data);
             if (data.messageType === 'HOSTGAME') {        
                 this.setState({gameCode : data.content});                
+            } else if(data.messageType === 'HOST_JOINGAME') {
+                this.setState({guests : data.content});
             }
         });
-        this.ws.send('HOSTGAME');
+        this.ws.send(Commons.dataToSendBuilder('HOSTGAME'));
     }
 
     hostJumboTronMessage = () => {
@@ -52,6 +54,7 @@ export default class Host extends React.Component {
     proceedToHostingAfterConnectingToServer = () => {
         if (this.state.gameCode !== 'ERROR') {
             console.log(this.state.gameCode);
+            console.log(this.state.guests);
             return (
                 <Container>
                     <Row>
@@ -68,7 +71,7 @@ export default class Host extends React.Component {
                                     Current Guests: {this.state.guests.length}
                                 </Card.Header>
                                 <Card.Body>
-                                    {this.state.guests.map ((guest, i) => <CreateGuest name={guest.name} key={i}/>)}
+                                    {this.state.guests.map ((guest, i) => <CreateGuest name={guest.guestName} key={i}/>)}
                                 </Card.Body>
                             </Card>
                         </Col>

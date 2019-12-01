@@ -16,7 +16,7 @@ public class GameSessionManager {
         return ourInstance;
     }
 
-    public String generateUniqueGameCode () {
+    public String generateUniqueGameCode() {
         StringBuilder gameCode;
         do {
             gameCode = new StringBuilder();
@@ -28,24 +28,55 @@ public class GameSessionManager {
         return gameCode.toString();
     }
 
-    public void addGame (String gameCode, Integer sessionId) throws Exception {
+    public void addGame(String gameCode, Integer sessionId) throws Exception {
         if (games.keySet().contains(gameCode))
             throw new Exception("Game Code Already exist");
-        else games.put(gameCode, new GameData(sessionId, new HashSet<>()));
-        System.out.println("Added: "+printGames());
+        else games.put(gameCode, new GameData(sessionId, new HashMap<>()));
+        System.out.println("Games on memory: " + printGames());
     }
 
-    public void removeGame (Integer sessionId) throws Exception{
+    public void removeGame(Integer sessionId) throws Exception {
         String gameCode = getGameCodeBySessionId(sessionId);
         if (games.keySet().contains(gameCode)) {
             games.remove(gameCode);
-            System.out.println("Removed: "+gameCode);
-        }
-        else
+            System.out.println("Removed: " + gameCode);
+        } else
             throw new Exception("Game Code does not exist");
     }
 
-    private String printGames () {
+    public void addGuestToExistingGame(Integer guestSessionId, String guestName, String gameCode) {
+        for (String key : games.keySet()) {
+            if (key.equals(gameCode)) {
+                games.get(key).getGuests().put(guestSessionId, guestName);
+            }
+        }
+    }
+
+    public void removeGuestToExistingGame(Integer guestSessionId, String gameCode) {
+        for (String key : games.keySet()) {
+            if (key.equals(gameCode)) {
+                games.get(key).getGuests().remove(guestSessionId);
+            }
+        }
+    }
+
+    public String getGameCodeBySessionId(Integer sessionId) {
+        for (String gameCode : games.keySet()) {
+            if (games.get(gameCode).getHostSessionId().equals(sessionId))
+                return gameCode;
+        }
+        return null;
+    }
+
+    public Integer getHostSessionIdOfExistingGameByGameCode(String gameCode) {
+        return games.get(gameCode).getHostSessionId();
+    }
+
+    public GameData getGameDataByGameCode(String gameCode) {
+        return games.get(gameCode);
+    }
+
+    public String printGames() {
         return gson.toJson(games);
     }
 
@@ -53,20 +84,13 @@ public class GameSessionManager {
         games = new HashMap<>();
     }
 
-    private int getRandomIntegerBetweenRange(int min, int max){
-        return (int)(Math.random()*((max-min)+1))+min;
+    private int getRandomIntegerBetweenRange(int min, int max) {
+        return (int) (Math.random() * ((max - min) + 1)) + min;
     }
 
     private char getCharacterEquivalentOfInteger(int givenInteger) {
-        return (char)givenInteger;
+        return (char) givenInteger;
     }
 
-    private String getGameCodeBySessionId (Integer sessionId) {
-        for (String gameCode : games.keySet()) {
-            if (games.get(gameCode).getHostSessionId().equals(sessionId))
-                return gameCode;
-        }
-        return null;
-    }
 
 }

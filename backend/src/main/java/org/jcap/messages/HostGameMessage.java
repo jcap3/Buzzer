@@ -10,7 +10,7 @@ public class HostGameMessage implements Message {
     private final String msgTypeIdentifier = "HOSTGAME";
 
     @Override
-    public String processMessage(Session session) {
+    public String processMessage(Session session, SimpleMessage simpleMessage) {
         GameSessionManager gameSessionManager = GameSessionManager.getInstance();
         String generatedGameCode = gameSessionManager.generateUniqueGameCode();
         try {
@@ -19,7 +19,7 @@ public class HostGameMessage implements Message {
             e.printStackTrace();
         }
         FrontEndBuzzerQueueEndpoint.sendToSpecificSession(FrontEndBuzzerQueueEndpoint.HexToInt(session.getId()),
-                FrontEndBuzzerQueueEndpoint.messageBuilder(MessageTypes.HOSTGAME, generatedGameCode));
+                    new SimpleMessage(MessageTypes.HOSTGAME, generatedGameCode));
         return generatedGameCode;
     }
 

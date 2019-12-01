@@ -1,7 +1,7 @@
 package org.jcap.messages;
 
 public enum MessageTypes {
-    HOSTGAME (new HostGameMessage()), JOINGAME(new JoinGameMessage());
+    HOSTGAME (new HostGameMessage()), JOINGAME(new JoinGameMessage()), HOST_JOINGAME(null);
 
     private Message msgTypeEquivalent;
     public Message getMsgTypeEquivalent() {
