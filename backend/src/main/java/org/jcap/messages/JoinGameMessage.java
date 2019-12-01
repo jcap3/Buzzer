@@ -1,6 +1,8 @@
 package org.jcap.messages;
 
 import com.google.gson.internal.LinkedTreeMap;
+import org.jcap.Client;
+import org.jcap.ClientTypes;
 import org.jcap.GameSessionManager;
 import org.jcap.endpoints.FrontEndBuzzerQueueEndpoint;
 
@@ -10,14 +12,15 @@ public class JoinGameMessage implements Message {
     private final String identifier = "JOINGAME";
 
     @Override
-    public String processMessage(Session session, SimpleMessage simpleMessage) {
+    public String processMessage(Client client, SimpleMessage simpleMessage) {
+        client.setClientType(ClientTypes.GUEST);
         GameSessionManager gameSessionManager = GameSessionManager.getInstance();
         if (!isMessageContentIsLinkedTreeMap(simpleMessage)) {
             System.out.println("SimpleMessage.content wrong format");
             return null;
         }
         LinkedTreeMap linkedTreeMapContent = (LinkedTreeMap) simpleMessage.getContent();
-        gameSessionManager.addGuestToExistingGame(FrontEndBuzzerQueueEndpoint.HexToInt(session.getId()),
+        gameSessionManager.addGuestToExistingGame(client.getSessionId(),
                 linkedTreeMapContent.get("guestName").toString(),
                 linkedTreeMapContent.get("gameCode").toString());
         FrontEndBuzzerQueueEndpoint.sendToSpecificSession(

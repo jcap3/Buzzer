@@ -1,6 +1,9 @@
 package org.jcap;
 
 import com.google.gson.Gson;
+import org.jcap.endpoints.FrontEndBuzzerQueueEndpoint;
+import org.jcap.messages.MessageTypes;
+import org.jcap.messages.SimpleMessage;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,13 +38,15 @@ public class GameSessionManager {
         System.out.println("Games on memory: " + printGames());
     }
 
-    public void removeGame(Integer sessionId) throws Exception {
-        String gameCode = getGameCodeBySessionId(sessionId);
-        if (games.keySet().contains(gameCode)) {
-            games.remove(gameCode);
-            System.out.println("Removed: " + gameCode);
-        } else
-            throw new Exception("Game Code does not exist");
+    public void removeGame(Client client){ //only removes game if the client is host
+        if (client.getClientType() != null && client.getClientType().equals(ClientTypes.HOST)) {
+            String gameCode = getGameCodeBySessionId(FrontEndBuzzerQueueEndpoint.HexToInt(client.getSession().getId()));
+            if (games.keySet().contains(gameCode)) {
+                games.remove(gameCode);
+                System.out.println("Removed: " + gameCode);
+            } else
+                System.out.println("Game Code does not exist");
+        }
     }
 
     public void addGuestToExistingGame(Integer guestSessionId, String guestName, String gameCode) {
@@ -56,13 +61,18 @@ public class GameSessionManager {
         for (String key : games.keySet()) {
             if (key.equals(gameCode)) {
                 games.get(key).getGuests().remove(guestSessionId);
+                FrontEndBuzzerQueueEndpoint.sendToSpecificSession(games.get(key).getHostSessionId(),
+                        new SimpleMessage(MessageTypes.HOST_JOINGAME,
+                                getGameDataByGameCode(gameCode).getGuestNames()));
+                break;
             }
         }
     }
 
     public String getGameCodeBySessionId(Integer sessionId) {
         for (String gameCode : games.keySet()) {
-            if (games.get(gameCode).getHostSessionId().equals(sessionId))
+            if (games.get(gameCode).getGuests().keySet().contains(sessionId) // guests id
+                    || games.get(gameCode).getHostSessionId().equals(sessionId)) //host id
                 return gameCode;
         }
         return null;
