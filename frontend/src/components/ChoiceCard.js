@@ -31,9 +31,11 @@ export default class ChoiceCard extends React.Component {
             </Form>;
         else 
             form = 
-            <Button variant='primary' type='submit' href='host'>
-                Host Game
-            </Button>;
+            <Link to='/host'>
+                <Button variant='primary'>
+                    Host Game
+                </Button>
+            </Link>;
         return (
             form
         )
