@@ -7,6 +7,7 @@ import Badge from 'react-bootstrap/Badge'
 import Spinner from 'react-bootstrap/Spinner'
 import Card from 'react-bootstrap/Card'
 import Commons from './Commons'
+import Button from "react-bootstrap/Button";
 
 export default class Host extends React.Component {
 
@@ -15,22 +16,18 @@ export default class Host extends React.Component {
         this.state = {
             gameCode: 'ERROR',
             guests: [],
+            isShowWarningModal: false
         };
         this.ws = this.props.websocket;
     }
 
-    componentDidUpdate() {
-        console.log('host component update');
-    }
-
     componentDidMount() {
-        console.log("host mount")
         this.ws.addEventListener("message", e => {
             let data = JSON.parse(e.data);
-            if (data.messageType === 'HOSTGAME') {        
-                this.setState({gameCode : data.content});                
-            } else if(data.messageType === 'HOST_JOINGAME') {
-                this.setState({guests : data.content});
+            if (data.messageType === 'HOSTGAME') {
+                this.setState({gameCode: data.content});
+            } else if (data.messageType === 'HOST_JOINGAME') {
+                this.setState({guests: data.content});
             }
         });
         this.ws.send(Commons.dataToSendBuilder('HOSTGAME'));
@@ -45,10 +42,41 @@ export default class Host extends React.Component {
                 <p>This code will be used by guests who want to join your game.</p>
                 <div>
                     <span>Accepting incoming guests</span>
-                    <Spinner animation='grow' />
+                    <Spinner animation='grow'/>
                 </div>
+                <Button style={{marginTop: 10 + 'px'}} variant='primary' onClick={this.handleStartGameClick}>Start
+                    Game</Button>
             </React.Fragment>
         )
+    };
+
+    handleStartGameClick = () => {
+        if (this.state.guests.length <= 1)
+            this.setState({isShowWarningModal: true});
+        else
+            console.log('lets go!')
+    };
+
+    handleModalClose = () => {
+        this.setState({isShowWarningModal: false})
+    };
+
+    formatGuests = () => {
+        let rows = [];
+        let cols = [];
+        this.state.guests.forEach((guest, i) => {
+            cols.push(<Col key={i}><CreateGuest name={guest.guestName}/></Col>);
+            if (((i === 0 ? 1 : i) % 4) === 0 || i === (this.state.guests.length - 1)) {
+                console.log('index: ' + i.toString());
+                rows.push(<Row key={i} style={{marginBottom: 10 + 'px'}}>{cols}</Row>);
+                cols = [];
+            }
+        });
+        return (
+            <Container>
+                {rows}
+            </Container>
+        );
     };
 
     proceedToHostingAfterConnectingToServer = () => {
@@ -61,7 +89,7 @@ export default class Host extends React.Component {
                         <Col>
                             <Jumbotron>
                                 {this.hostJumboTronMessage()}
-                            </Jumbotron >
+                            </Jumbotron>
                         </Col>
                     </Row>
                     <Row>
@@ -71,17 +99,18 @@ export default class Host extends React.Component {
                                     Current Guests: {this.state.guests.length}
                                 </Card.Header>
                                 <Card.Body>
-                                    {this.state.guests.map ((guest, i) => <CreateGuest name={guest.guestName} key={i}/>)}
+                                    {this.formatGuests()}
                                 </Card.Body>
                             </Card>
                         </Col>
                     </Row>
+                    {Commons.showModal('Buzzer', 'Failed to start game, Not enough players.', this.state.isShowWarningModal, this.handleModalClose)}
                 </Container>
             )
         }
     };
-              
-    render () {
+
+    render() {
         return (
             <React.Fragment>
                 {this.proceedToHostingAfterConnectingToServer()}
@@ -93,7 +122,7 @@ export default class Host extends React.Component {
 const CreateGuest = ({name, score}) => {
     return (
         <React.Fragment>
-            <Card border='dark' style={{ width: 200 + 'px' }}>
+            <Card border='dark' style={{width: 200 + 'px'}}>
                 <Card.Header>
                     {name}
                 </Card.Header>

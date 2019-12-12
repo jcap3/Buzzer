@@ -26,7 +26,7 @@ public class FrontEndBuzzerQueueEndpoint {
 
     @OnOpen
     public void onOpen(Session session) {
-        System.out.println("FE connected: " + session.getId());
+        System.out.println("FE connected! Session id: " + session.getId());
         frontEndSession.put(HexToInt(session.getId()), new Client(session));
         // temp printouts
         System.out.println("session size: " + frontEndSession.size());
