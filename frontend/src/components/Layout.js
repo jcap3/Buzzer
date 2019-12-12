@@ -5,22 +5,25 @@ import Col from 'react-bootstrap/Col'
 import CustomNavBar from './CustomNavBar'
 import Jumbotron from 'react-bootstrap/Jumbotron'
 import ChoiceCard from './ChoiceCard'
-import {BrowserRouter, Route} from 'react-router-dom'
+import {BrowserRouter, Link, Redirect, Route, useHistory} from 'react-router-dom'
 import Host from './Host'
 import Guest from './Guest'
 import LoadingWholePage from './LoadingWholePage'
+import Commons from "./Commons";
 
 export default class Layout extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: true
+            isLoading: true,
+            gameCode: 'ERROR'
         };
         this.connectionSuccessful = false;
         this.ws = new WebSocket('ws://10.12.19.71:8081/buzzerqueue/connect');
         this.currentGuestName = '';
         this.currentGuestGameCode = '';
+
     }
 
     componentDidMount() {
@@ -30,12 +33,23 @@ export default class Layout extends React.Component {
         };
         this.ws.onmessage = (e) => {
             console.log(e.data);
+            let data = JSON.parse(e.data);
+            if (data.messageType === 'HOSTGAME') {
+                this.setState({gameCode: data.content});
+            }
         };
         this.ws.onclose = (e) => {
             console.log('Disconnected from Server. ' + e.reason);
         };
         this.ws.onerror = e => {
             console.log('Error Occurred');
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        let history = useHistory();
+        if(this.state.gameCode !== 'ERROR') {
+            history.push('/gaming');
         }
     }
 
@@ -51,6 +65,9 @@ export default class Layout extends React.Component {
                 </p>
             </React.Fragment>
             )
+    };
+    handleClickForHostGame = e => {
+        this.ws.send(Commons.dataToSendBuilder('HOSTGAME'));
     };
 
     handleChangeForName = e => {
@@ -73,10 +90,10 @@ export default class Layout extends React.Component {
                     </Row>        
                     <Row>
                         <Col>
-                            <ChoiceCard title='Host' form='host'/>
+                            <ChoiceCard title='Host' form='host' handleClickForHostGame={this.handleClickForHostGame}/>
                         </Col>
                         <Col>
-                            <ChoiceCard title='Guest' form='guest' handleClickForJoinGame={this.handleClickForJoinGame}
+                            <ChoiceCard title='Guest' form='guest'
                                 handleChangeForName={this.handleChangeForName} 
                                 handleChangeForGameCode={this.handleChangeForGameCode}
                             />
@@ -94,6 +111,10 @@ export default class Layout extends React.Component {
         return (<Guest websocket={this.ws} guestName = {this.currentGuestName} guestGameCode = {this.currentGuestGameCode}/>)
     };
 
+    gaming = () => {
+        return (<p>wew2</p>)
+    };
+
     layoutContent = () => {
         return (
             <React.Fragment>
@@ -101,9 +122,10 @@ export default class Layout extends React.Component {
                     <CustomNavBar brand='DCAP Buzzer'/>
                 </div>
                 <BrowserRouter>
-                    <Route exact={true} path='/' component={this.main}/>
-                    <Route exact={true} path='/host' component={this.hosting}/>
-                    <Route exact={true} path='/guest' component={this.guesting}/>
+                    <Route exact path='/' component={this.main}/>
+                    <Route exact path='/host' component={this.hosting}/>
+                    <Route exact path='/guest' component={this.guesting}/>
+                    <Route exact path='/gaming' component={this.gaming}/>
                 </BrowserRouter>
             </React.Fragment>
         )

@@ -8,6 +8,10 @@ import Spinner from 'react-bootstrap/Spinner'
 import Card from 'react-bootstrap/Card'
 import Commons from './Commons'
 import Button from "react-bootstrap/Button";
+import Image from "react-bootstrap/Image";
+import bulb_on from '../pic_bulbon.gif'
+import bulb_off from '../pic_bulbon.gif'
+import {Redirect} from "react-router-dom";
 
 export default class Host extends React.Component {
 
@@ -16,7 +20,8 @@ export default class Host extends React.Component {
         this.state = {
             gameCode: 'ERROR',
             guests: [],
-            isShowWarningModal: false
+            isShowWarningModal: false,
+            isStarted: false
         };
         this.ws = this.props.websocket;
     }
@@ -53,8 +58,9 @@ export default class Host extends React.Component {
     handleStartGameClick = () => {
         if (this.state.guests.length <= 1)
             this.setState({isShowWarningModal: true});
-        else
-            console.log('lets go!')
+        else {
+            this.setState({isStarted: true})
+        }
     };
 
     handleModalClose = () => {
@@ -104,7 +110,7 @@ export default class Host extends React.Component {
                             </Card>
                         </Col>
                     </Row>
-                    {Commons.showModal('Buzzer', 'Failed to start game, Not enough players.', this.state.isShowWarningModal, this.handleModalClose)}
+                    {Commons.showModal('Buzzer', 'Failed to start game. Not enough players.', this.state.isShowWarningModal, this.handleModalClose)}
                 </Container>
             )
         }
@@ -113,7 +119,7 @@ export default class Host extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {this.proceedToHostingAfterConnectingToServer()}
+                {this.state.isStarted? <Redirect push to={`/gaming/${this.state.gameCode}`}/> : this.proceedToHostingAfterConnectingToServer()}
             </React.Fragment>
         )
     }
