@@ -5,11 +5,12 @@ import Col from 'react-bootstrap/Col'
 import CustomNavBar from './CustomNavBar'
 import Jumbotron from 'react-bootstrap/Jumbotron'
 import ChoiceCard from './ChoiceCard'
-import {BrowserRouter, Link, Redirect, Route, useHistory} from 'react-router-dom'
+import {BrowserRouter, Redirect, Route} from 'react-router-dom'
 import Host from './Host'
 import Guest from './Guest'
 import LoadingWholePage from './LoadingWholePage'
 import Commons from "./Commons";
+import Gaming from './Gaming'
 
 export default class Layout extends React.Component {
 
@@ -17,10 +18,10 @@ export default class Layout extends React.Component {
         super(props);
         this.state = {
             isLoading: true,
-            gameCode: 'ERROR'
+            gameCode: 'ERROR'    
         };
         this.connectionSuccessful = false;
-        this.ws = new WebSocket('ws://10.12.19.71:8081/buzzerqueue/connect');
+        this.ws = new WebSocket('ws://localhost:8080/buzzerqueue/connect');
         this.currentGuestName = '';
         this.currentGuestGameCode = '';
 
@@ -46,12 +47,9 @@ export default class Layout extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        let history = useHistory();
-        if(this.state.gameCode !== 'ERROR') {
-            history.push('/gaming');
-        }
-    }
+    // componentDidUpdate(prevProps, prevState, snapshot) {    
+       
+    // }
 
     appFrontMessage = () => {
         return (
@@ -104,7 +102,7 @@ export default class Layout extends React.Component {
     };   
 
     hosting = () => {
-        return (<Host websocket={this.ws}/>)
+        return (<Host websocket={this.ws} gameCode={this.state.gameCode}/>)
     };
 
     guesting = () => {
@@ -112,7 +110,9 @@ export default class Layout extends React.Component {
     };
 
     gaming = () => {
-        return (<p>wew2</p>)
+        return (
+            <Gaming/>
+        )
     };
 
     layoutContent = () => {
@@ -122,13 +122,14 @@ export default class Layout extends React.Component {
                     <CustomNavBar brand='DCAP Buzzer'/>
                 </div>
                 <BrowserRouter>
+                    {this.state.gameCode !== 'ERROR' && <Redirect push to='/host'/>}
                     <Route exact path='/' component={this.main}/>
                     <Route exact path='/host' component={this.hosting}/>
                     <Route exact path='/guest' component={this.guesting}/>
                     <Route exact path='/gaming' component={this.gaming}/>
                 </BrowserRouter>
             </React.Fragment>
-        )
+        )    
     };
 
     render() {
