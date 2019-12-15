@@ -14,23 +14,12 @@ export default class Host extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            guests: [],
+        this.state = {            
             isShowWarningModal: false,
             isStarted: false
         };
         this.ws = this.props.websocket;
         this.gameCode = this.props.gameCode;
-    }
-
-    componentDidMount() {
-        this.ws.addEventListener("message", e => {
-            let data = JSON.parse(e.data);
-            if (data.messageType === 'HOST_JOINGAME') {
-                this.setState({ guests: data.content });
-            }
-        });
-        // this.ws.send(Commons.dataToSendBuilder('HOSTGAME'));
     }
 
     hostJumboTronMessage = () => {
@@ -51,33 +40,16 @@ export default class Host extends React.Component {
     };
 
     handleStartGameClick = () => {
-        if (this.state.guests.length <= 1)
+        if (this.props.guests.length <= 1)
             this.setState({ isShowWarningModal: true });
         else {
+            this.ws.send(Commons.dataToSendBuilder('HOST_START_GAME'));
             this.setState({ isStarted: true })
         }
     };
 
     handleModalClose = () => {
         this.setState({ isShowWarningModal: false })
-    };
-
-    formatGuests = () => {
-        let rows = [];
-        let cols = [];
-        this.state.guests.forEach((guest, i) => {
-            cols.push(<Col key={i}><CreateGuest name={guest.guestName} /></Col>);
-            if (((i === 0 ? 1 : i) % 4) === 0 || i === (this.state.guests.length - 1)) {
-                console.log('index: ' + i.toString());
-                rows.push(<Row key={i} style={{ marginBottom: 10 + 'px' }}>{cols}</Row>);
-                cols = [];
-            }
-        });
-        return (
-            <Container>
-                {rows}
-            </Container>
-        );
     };
 
     hostView = () => {    
@@ -94,10 +66,10 @@ export default class Host extends React.Component {
                     <Col>
                         <Card border='primary'>
                             <Card.Header>
-                                Current Guests: {this.state.guests.length}
+                                Current Guests: {this.props.guests.length}
                             </Card.Header>
                             <Card.Body>
-                                {this.formatGuests()}
+                                {Commons.displayCardsIn4ColsFormat(this.props.guests, undefined, 'host')}
                             </Card.Body>
                         </Card>
                     </Col>
@@ -117,17 +89,3 @@ export default class Host extends React.Component {
     }
 }
 
-const CreateGuest = ({ name, score }) => {
-    return (
-        <React.Fragment>
-            <Card border='dark' style={{ width: 200 + 'px' }}>
-                <Card.Header>
-                    {name}
-                </Card.Header>
-                <Card.Body>
-                    Score: {score}
-                </Card.Body>
-            </Card>
-        </React.Fragment>
-    )
-};

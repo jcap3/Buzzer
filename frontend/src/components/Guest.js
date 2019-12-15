@@ -16,13 +16,7 @@ export default class Guest extends React.Component {
         this.ws = this.props.websocket;
     }
 
-    componentDidMount() {
-        this.ws.addEventListener("message", e => {
-            let data = JSON.parse(e.data);
-            if (data.messageType === 'JOINGAME')
-                console.log();
-            // this.setState({gameCode : data.content});                
-        });
+    componentDidMount() {    
         this.ws.send(Commons.dataToSendBuilder('JOINGAME', {
             'guestName': this.props.guestName,
             'gameCode': this.props.guestGameCode
