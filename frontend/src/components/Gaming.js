@@ -50,7 +50,7 @@ export default class Gaming extends React.Component {
                                     <Card.Body>
                                         {
                                             this.props.isHost ? Commons.displayCardsIn4ColsFormat(this.props.guests, this.guestsBuzzHandler, 'host', false) :
-                                                Commons.displayCardsIn4ColsFormat(this.props.guests, this.guestsBuzzHandler, this.props.myName, this.props.buzzingStart)
+                                                Commons.displayCardsIn4ColsFormat(this.props.guests, this.guestsBuzzHandler, this.props.myName, this.props.buzzingStart, this.props.theBuzzer)
                                         }
                                     </Card.Body>
                                 </Card>

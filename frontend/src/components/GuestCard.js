@@ -2,7 +2,7 @@ import React from 'react'
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
-const GuestCard = ({ name, buttonsCallback, userName, isStarted }) => {
+const GuestCard = ({ name, buttonsCallback, userName, isStarted, theBuzzer }) => {
     return (
         <React.Fragment>
             <Card border='dark' style={{ width: 200 + 'px' }}>
@@ -12,7 +12,7 @@ const GuestCard = ({ name, buttonsCallback, userName, isStarted }) => {
                 <Card.Body>
                     {
                         buttonsCallback !== undefined  && userName === 'host' ? <Button variant='primary' id={name} onClick={buttonsCallback} disabled={!isStarted}>Buzz!</Button> :
-                        name === userName ? <Button variant='primary' id={name} onClick={buttonsCallback} disabled={!isStarted}>Buzz!</Button> : <React.Fragment>:P</React.Fragment>
+                        name === userName ? <Button variant='primary' id={name} onClick={buttonsCallback} disabled={!isStarted || theBuzzer!==''}>Buzz!</Button> : <React.Fragment>:P</React.Fragment>
                     }
                 </Card.Body>
             </Card>
