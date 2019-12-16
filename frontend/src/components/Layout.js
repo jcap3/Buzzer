@@ -11,6 +11,10 @@ import Guest from './Guest'
 import LoadingWholePage from './LoadingWholePage'
 import Commons from "./Commons";
 import Gaming from './Gaming'
+import UIfx  from 'uifx'
+import beepSound from '../zelbellsound.mp3'
+
+const beep = new UIfx(beepSound)
 
 export default class Layout extends React.Component {
 
@@ -50,10 +54,10 @@ export default class Layout extends React.Component {
                     guests: data.content.guestNames, 
                     myName: data.content.myName})
             } else if (data.messageType === 'BUZZ') {
+                beep.play();
                 this.setState({theBuzzer: data.content});
             } else if(data.messageType === 'HOST_RESET') {
-                this.setState({theBuzzer: ''});
-                this.setState({buzzingStart : false});
+                this.setState({theBuzzer: '', buzzingStart : false});            
             } else if (data.messageType === 'HOST_START_BUZZER') {
                 this.setState({buzzingStart : true});
             }
@@ -103,7 +107,7 @@ export default class Layout extends React.Component {
     };
 
     main = () => {
-        return (<React.Fragment>
+        return (<React.Fragment>        
             <Container>
                 <Row >
                     <Col>
